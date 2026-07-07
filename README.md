@@ -26,8 +26,7 @@ The project follows modern cloud data engineering best practices and showcases h
 
 # Architecture
 
-![Architecture](<img width="1536" height="1024" alt="ChatGPT Image Jul 6, 2026, 04_13_04 PM" src="https://github.com/user-attachments/assets/d92b53fd-5969-4441-a8c6-74de4e07b1c0" />
-)
+![Architecture](https://github.com/user-attachments/assets/d92b53fd-5969-4441-a8c6-74de4e07b1c0)
 
 ## Architecture Flow
 
