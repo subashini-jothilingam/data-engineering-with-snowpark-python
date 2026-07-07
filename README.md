@@ -149,136 +149,283 @@ snowpark-data-engineering-pipeline/
 └── README.md
 ```
 
----
-
 # Pipeline Workflow
 
-## Step 1 — Data Ingestion
-
-Source data is stored as Parquet files.
-
-```
-Parquet Files
-      │
-COPY INTO
-      │
-Bronze Tables
-```
-
-Features:
-
-- Auto schema inference
-- High-performance bulk loading
-- Native Snowflake ingestion
+This project demonstrates a complete Snowflake-native data engineering pipeline using **Snowpark Python**, **Python UDFs**, **Stored Procedures**, **Streams**, **Tasks**, and **GitHub Actions**.
 
 ---
 
-## Step 2 — Incremental Processing
+## Step 1 – Snowflake Environment Setup
 
-Instead of scanning the full dataset every run, Snowflake Streams capture:
+**Folder**
 
-- Inserts
-- Updates
-- Deletes
+```
+steps/01_setup_snowflake.sql
+```
 
-Only changed records are processed.
+Creates the required Snowflake infrastructure.
 
-Benefits:
+**Objects Created**
 
-- Lower compute cost
-- Faster execution
-- Production scalability
+- Database
+- Schema
+- Warehouse
+- File Format
+- Stage
+- Tables
+- Required permissions
 
 ---
 
-## Step 3 — Data Transformation
+## Step 2 – Load Raw Data
 
-Transformations are implemented using the Snowpark DataFrame API.
+**File**
 
-Example operations:
+```
+steps/02_load_raw.py
+```
+
+Loads raw weather and point-of-sale datasets into Snowflake.
+
+**Highlights**
+
+- Snowpark Python
+- DataFrame API
+- Bulk data loading
+- Initial ingestion
+
+---
+
+## Step 3 – Load Weather Data
+
+**File**
+
+```
+steps/03_load_weather.sql
+```
+
+Loads weather data into Snowflake tables using SQL.
+
+**Responsibilities**
+
+- Populate weather tables
+- Validate imported records
+- Prepare data for downstream processing
+
+---
+
+## Step 4 – Create POS View
+
+**File**
+
+```
+steps/04_create_pos_view.py
+```
+
+Creates a Snowpark DataFrame-based view that joins and prepares Point-of-Sale data for analytics.
+
+**Responsibilities**
 
 - Data cleansing
-- Standardization
-- Deduplication
-- Filtering
-- Aggregations
-- Joins
-- Window functions
+- Column standardization
+- Business transformations
+- View creation
 
 ---
 
-## Step 4 — Python UDFs
+## Step 5 – Create Python UDF
 
-Reusable business logic is implemented as Python UDFs.
-
-Example:
-
-- Customer segmentation
-- Risk scoring
-- Data validation
-- Standardized calculations
-
----
-
-## Step 5 — Stored Procedures
-
-Python Stored Procedures orchestrate the entire pipeline.
-
-Responsibilities:
-
-- Execute transformations
-- Handle errors
-- Maintain execution order
-- Log execution status
-
----
-
-## Step 6 — Scheduling
-
-Snowflake Tasks automate pipeline execution.
-
-Example schedule:
+**Folder**
 
 ```
-Every Hour
+steps/05_fahrenheit_to_celsius_udf/
+```
+
+Implements a reusable Python User Defined Function (UDF).
+
+```
+fahrenheit_to_celsius_udf/
+    function.py
+```
+
+**Purpose**
+
+Convert temperature values from Fahrenheit to Celsius within Snowflake.
+
+**Technologies**
+
+- Snowpark Python
+- Python UDF
+- SnowCLI Deployment
+
+---
+
+## Step 6 – Orders Update Stored Procedure
+
+**Folder**
+
+```
+steps/06_orders_update_sp/
+```
+
+Creates a Python Stored Procedure responsible for updating order-related data.
+
+```
+orders_update_sp/
+    procedure.py
+```
+
+**Responsibilities**
+
+- Process new order records
+- Execute transformation logic
+- Update target tables
+
+---
+
+## Step 7 – Daily City Metrics Stored Procedure
+
+**Folder**
+
+```
+steps/07_daily_city_metrics_update_sp/
+```
+
+Calculates daily city-level weather and sales metrics.
+
+```
+daily_city_metrics_update_sp/
+    procedure.py
+```
+
+**Responsibilities**
+
+- Aggregate daily metrics
+- Generate city-level KPIs
+- Produce analytics-ready datasets
+
+---
+
+## Step 8 – Orchestrate Pipeline
+
+**File**
+
+```
+steps/08_orchestrate_jobs.sql
+```
+
+Creates Snowflake Tasks that orchestrate the execution of all pipeline components.
+
+Pipeline execution order:
+
+```
+Load Data
       │
       ▼
-Call Stored Procedure
+Create Views
       │
-Execute Pipeline
+      ▼
+Execute UDF
       │
-Update Gold Tables
+      ▼
+Run Orders Update Procedure
+      │
+      ▼
+Run Daily Metrics Procedure
 ```
 
 ---
 
-## Step 7 — Monitoring
+## Step 9 – Incremental Processing
 
-Pipeline health can be monitored using:
+**File**
 
-- Task History
-- Query History
-- Execution Logs
-- Snowsight Dashboard
+```
+steps/09_process_incrementally.sql
+```
+
+Implements Change Data Capture (CDC) using Snowflake Streams.
+
+Only newly inserted or modified records are processed.
+
+**Benefits**
+
+- Faster execution
+- Lower compute cost
+- Production-ready incremental pipeline
 
 ---
 
-## Step 8 — CI/CD
+## Step 10 – CI/CD Deployment
 
-Deployment pipeline:
+**File**
+
+```
+steps/10_deploy_via_cicd.sql
+```
+
+Demonstrates automated deployment using SnowCLI and GitHub Actions.
+
+Deployment workflow:
 
 ```
 Developer
-     │
+      │
+      ▼
 Git Commit
-     │
-GitHub
-     │
+      │
+      ▼
+GitHub Repository
+      │
+      ▼
 GitHub Actions
-     │
+      │
+      ▼
 SnowCLI
-     │
-Deploy to Snowflake
+      │
+      ▼
+Deploy Snowpark Objects
+      │
+      ▼
+Snowflake
+```
+
+---
+
+# End-to-End Execution Flow
+
+```
+01_setup_snowflake.sql
+            │
+            ▼
+02_load_raw.py
+            │
+            ▼
+03_load_weather.sql
+            │
+            ▼
+04_create_pos_view.py
+            │
+            ▼
+05_fahrenheit_to_celsius_udf
+            │
+            ▼
+06_orders_update_sp
+            │
+            ▼
+07_daily_city_metrics_update_sp
+            │
+            ▼
+08_orchestrate_jobs.sql
+            │
+            ▼
+09_process_incrementally.sql
+            │
+            ▼
+10_deploy_via_cicd.sql
+            │
+            ▼
+Analytics & Reporting
 ```
 
 Pipeline validates:
