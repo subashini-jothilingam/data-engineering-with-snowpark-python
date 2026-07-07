@@ -100,33 +100,52 @@ Snowflake Deployment
 snowpark-data-engineering-pipeline/
 
 │
-├── data/
-│   ├── raw/
-│   └── sample_data/
-│
-├── sql/
-│   ├── create_tables.sql
-│   ├── create_streams.sql
-│   ├── create_tasks.sql
-│   └── create_procedures.sql
-│
-├── python/
-│   ├── transformations.py
-│   ├── udf.py
-│   ├── stored_procedures.py
-│   └── pipeline.py
-│
-├── deployment/
-│   ├── snowcli.yml
-│   └── deploy.sql
-│
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml
+│       └── ...
 │
-├── docs/
-│   └── architecture.png
+├── images/
+│   ├── *.png
+│   ├── *.svg
+│   └── ...
 │
+├── steps/
+│   ├── 01_setup_snowflake.sql
+│   │
+│   ├── 02_load_raw.py
+│   │
+│   ├── 03_load_weather.sql
+│   │
+│   ├── 04_create_pos_view.py
+│   │
+│   ├── 05_fahrenheit_to_celsius_udf/
+|   |   |__ fahrenheit_to_celsius_udf/
+│   │       ├── function.py
+│   │   ├── snowflake.yml
+│   │   └── requirements.txt
+│   │
+│   ├── 06_orders_update_sp/
+|   |   |── orders_update_sp/
+│   │       ├── procedure.py
+│   │   ├── snowflake.yml
+│   │   └── requirements.txt
+│   │
+│   ├── 07_daily_city_metrics_update_sp/
+|   |   |── daily_city_metrics_update_sp/
+│   │       ├── procedure.py
+│   │   ├── snowflake.yml
+│   │   └── requirements.txt
+|   │
+|   ├── 08_orchestrate_jobs.sql
+|   ├── 09_process_incrementally.sql
+|   ├── 10_deploy_via_cicd.sql
+|
+├── .gitignore
+├── deploy_snowpark_apps.py
+├── environment.yml
+├── requirements.txt
+├── LICENSE
+├── LEGAL.md
 └── README.md
 ```
 
