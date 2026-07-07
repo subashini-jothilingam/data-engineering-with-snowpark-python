@@ -390,4 +390,11 @@ Senior Data Engineer
 
 ---
 
-## If you found this project helpful, consider giving it a ⭐ on GitHub.
+## 👤 Author
+
+**Subashini Jothilingam**
+
+Data Engineer | Snowflake | PySpark | Airflow | dbt | AWS | SQL
+
+GitHub: https://github.com/subashini-jothilingam
+LinkedIn: https://linkedin.com/in/subashini-jothilingam
